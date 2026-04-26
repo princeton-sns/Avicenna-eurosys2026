@@ -1,0 +1,16 @@
+make
+declare -a pids
+    rsync -avz bin/linux_amd64/* chodsdon@fs.emulab.net:/proj/sequencer/slowdowns/avicenna/bin/ &
+    pids="$pids $!"
+    rsync -avz startAzureExpt.sh chodsdon@fs.emulab.net:/proj/sequencer/slowdowns/avicenna/ &
+    pids="$pids $!"
+    rsync -avz startexpt.sh chodsdon@fs.emulab.net:/proj/sequencer/slowdowns/avicenna/ &
+    pids="$pids $!"
+    rsync -avz startexp-new.sh chodsdon@fs.emulab.net:/proj/sequencer/slowdowns/avicenna/ &
+    pids="$pids $!"
+    rsync -avz startClients.sh chodsdon@fs.emulab.net:/proj/sequencer/slowdowns/avicenna/ &
+    pids="$pids $!"
+for pid in $pids; do
+	wait $pid
+done
+echo done

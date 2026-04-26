@@ -1,0 +1,111 @@
+#!/bin/bash
+
+set -x
+
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 1 1 180 10 avi10-1-1_1 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 1 1 180 10 avi10-1-1_2 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 1 1 180 10 avi10-1-1_3 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 1 1 180 10 avi10-1-1_4 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 1 1 180 10 avi10-1-1_5 0
+
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 10 1 180 10 avi10-10-1_1 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 10 1 180 10 avi10-10-1_2 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 10 1 180 10 avi10-10-1_3 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 10 1 180 10 avi10-10-1_4 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 10 1 180 10 avi10-10-1_5 0
+
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 20 2 180 10 avi10-20-2_1 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 20 2 180 10 avi10-20-2_2 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 20 2 180 10 avi10-20-2_3 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 20 2 180 10 avi10-20-2_4 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 20 2 180 10 avi10-20-2_5 0
+
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 40 2 180 10 avi10-40-2_1 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 40 2 180 10 avi10-40-2_2 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 40 2 180 10 avi10-40-2_3 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 40 2 180 10 avi10-40-2_4 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 40 2 180 10 avi10-40-2_5 0
+
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 80 4 180 10 avi10-80-4_1 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 80 4 180 10 avi10-80-4_2 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 80 4 180 10 avi10-80-4_3 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 80 4 180 10 avi10-80-4_4 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 80 4 180 10 avi10-80-4_5 0
+
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 160 8 180 10 avi10-160-8_1 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 160 8 180 10 avi10-160-8_2 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 160 8 180 10 avi10-160-8_3 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 160 8 180 10 avi10-160-8_4 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 160 8 180 10 avi10-160-8_5 0
+
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 220 20 180 10 avi10-220-20_1 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 220 20 180 10 avi10-220-20_2 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 220 20 180 10 avi10-220-20_3 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 220 20 180 10 avi10-220-20_4 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 220 20 180 10 avi10-220-20_5 0
+
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 330 30 180 10 avi10-330-30_1 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 330 30 180 10 avi10-330-30_2 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 330 30 180 10 avi10-330-30_3 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 330 30 180 10 avi10-330-30_4 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 330 30 180 10 avi10-330-30_5 0
+
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 480 30 180 10 avi10-480-30_1 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 480 30 180 10 avi10-480-30_2 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 480 30 180 10 avi10-480-30_3 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 480 30 180 10 avi10-480-30_4 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 480 30 180 10 avi10-480-30_5 0
+
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 1 1 180 25 avi25-1-1_1 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 1 1 180 25 avi25-1-1_2 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 1 1 180 25 avi25-1-1_3 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 1 1 180 25 avi25-1-1_4 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 1 1 180 25 avi25-1-1_5 0
+
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 10 1 180 25 avi25-10-1_1 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 10 1 180 25 avi25-10-1_2 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 10 1 180 25 avi25-10-1_3 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 10 1 180 25 avi25-10-1_4 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 10 1 180 25 avi25-10-1_5 0
+
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 20 2 180 25 avi25-20-2_1 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 20 2 180 25 avi25-20-2_2 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 20 2 180 25 avi25-20-2_3 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 20 2 180 25 avi25-20-2_4 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 20 2 180 25 avi25-20-2_5 0
+
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 40 2 180 25 avi25-40-2_1 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 40 2 180 25 avi25-40-2_2 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 40 2 180 25 avi25-40-2_3 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 40 2 180 25 avi25-40-2_4 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 40 2 180 25 avi25-40-2_5 0
+
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 80 4 180 25 avi25-80-4_1 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 80 4 180 25 avi25-80-4_2 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 80 4 180 25 avi25-80-4_3 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 80 4 180 25 avi25-80-4_4 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 80 4 180 25 avi25-80-4_5 0
+
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 160 8 180 25 avi25-160-8_1 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 160 8 180 25 avi25-160-8_2 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 160 8 180 25 avi25-160-8_3 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 160 8 180 25 avi25-160-8_4 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 160 8 180 25 avi25-160-8_5 0
+
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 220 20 180 25 avi25-220-20_1 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 220 20 180 25 avi25-220-20_2 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 220 20 180 25 avi25-220-20_3 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 220 20 180 25 avi25-220-20_4 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 220 20 180 25 avi25-220-20_5 0
+
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 330 30 180 25 avi25-330-30_1 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 330 30 180 25 avi25-330-30_2 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 330 30 180 25 avi25-330-30_3 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 330 30 180 25 avi25-330-30_4 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 330 30 180 25 avi25-330-30_5 0
+
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 480 30 180 25 avi25-480-30_1 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 480 30 180 25 avi25-480-30_2 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 480 30 180 25 avi25-480-30_3 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 480 30 180 25 avi25-480-30_4 0
+sudo ./startexpt-tputlat.sh "mr99rsm" 7 480 30 180 25 avi25-480-30_5 0

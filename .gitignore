@@ -1,0 +1,15 @@
+bin
+pkg
+copilot_plotting
+copilot-plotting
+mockCopilot
+avicenna-plotting/avicenna*
+avicenna-plotting/copilot*
+avicenna-plotting/copilot-pp*
+avicenna-plotting/fvc*
+avicenna-plotting/latentcopilot*
+avicenna-plotting/Avicenna*
+avicenna-plotting/Copilot*
+avicenna-plotting/Copilot-PP*
+avicenna-plotting/FVC*
+avicenna-plotting/Reactive-Copilot*
