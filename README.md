@@ -15,6 +15,11 @@ Avicenna is the first consensus protocol for geo-distributed RSMs that maintains
 Christopher Hodsdon, Zijian Qin, Khiem Ngo, Siddhartha Sen, Ethan Katz-Bassett, Wyatt Lloyd. 2026. Avicenna: Masking Slowdowns in Replicated State Machines with Counterfactual Evaluation. In 21st European Conference on Computer Systems (EUROSYS ’26), April 27–30, 2026, Edinburgh, Scotland Uk. ACM, New York, NY, USA, 23 pages. https://doi.org/10.1145/3767295.3803615
 
 
+### How to use this repository?
+
+Please refer to the wiki page! 
+
+
 ### What is in this repository?
 
 This repository contains the Go implementations of:
