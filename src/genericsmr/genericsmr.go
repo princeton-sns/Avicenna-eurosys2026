@@ -22,6 +22,8 @@ import (
 
 const CHAN_BUFFER_SIZE = 200000
 
+const STABLE_STORE = false
+
 const INJECT_TRANSIENT_SLOWDOWN = false
 const INJECT_LONGLIVED_SLOWDOWN = true
 const INJECT_LONGLIVED_SLOWDOWN_FOR_CLIENT = false
@@ -179,8 +181,10 @@ func NewReplica(id int, peerAddrList []string, thrifty bool, exec bool, dreply b
 	slowdownTimers = &slowdowntimers.SlowdownTimers{}
 	var err error
 
-	if r.StableStore, err = os.Create(fmt.Sprintf("stable-store-replica%d", r.Id)); err != nil {
-		log.Fatal(err)
+	if STABLE_STORE {
+		if r.StableStore, err = os.Create(fmt.Sprintf("stable-store-replica%d", r.Id)); err != nil {
+			log.Fatal(err)
+		}
 	}
 
 	for i := 0; i < r.N; i++ {

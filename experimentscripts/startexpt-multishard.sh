@@ -2,12 +2,12 @@
 
 exitfn() {
   trap - INT
-  ./killall.sh || true
+  $(pwd)/experimentscripts/killall.sh || true
   sleep 1
   declare -a killArr
   for i in `seq 1 $totalNodes`; do
     echo "killing $i"
-    ssh -o StrictHostKeyChecking=no node-$i "cd $prefix; ./killall.sh" &
+    ssh -o StrictHostKeyChecking=no node-$i "cd $prefix; $(pwd)/experimentscripts/killall.sh" &
     killArr="$killArr $!"
   done
   # -------- aggregate (use totalClients across shards) ----------
@@ -121,7 +121,7 @@ echo -e "Running ${proto} at $(date)\t${exp_uid}\tN=${n}\tclients=${clients}\tcn
 totalNodes=$((n + cnodes + 1))
 pids=""
 for i in $(seq 1 $totalNodes); do
-  (ssh -o StrictHostKeyChecking=no node-$i "cd '$prefix'; ./killall.sh || true") &
+  (ssh -o StrictHostKeyChecking=no node-$i "cd '$prefix'; $(pwd)/experimentscripts/killall.sh || true") &
   pids="$pids $!"
 done
 for pid in $pids; do wait $pid; done
@@ -177,7 +177,7 @@ for i in $(seq 0 $((cnodes - 1))); do
     fi
     ssh -o StrictHostKeyChecking=no node-${nodeId} "\
       cd '$prefix'; \
-      bash startClients-test.sh '-maddr=${masterAddr} -mport=${mport} -q=${reqs} -check=true \
+      bash $(pwd)/experimentscripts/startClients-test.sh '-maddr=${masterAddr} -mport=${mport} -q=${reqs} -check=true \
         -e=${doEpaxos} -twoLeaders=${doTwoLeaders} -doavicenna=${doAvicenna} -numKeys=${numkeys} \
         -c=${conflicts} -prefix=${outputDir} -runtime=${length} -s=${skewness}\
         -trim=${trim} -w=${writes} -proxy=${proxyReplica} -p=20 -tput_interval_in_sec=${tput_interval_in_sec} \
@@ -196,7 +196,7 @@ done
 
 # ==== Cleanup ====
 for i in $(seq 1 $totalNodes); do
-  ssh -o StrictHostKeyChecking=no node-$i "cd '$prefix'; ./killall.sh || true"
+  ssh -o StrictHostKeyChecking=no node-$i "cd '$prefix'; $(pwd)/experimentscripts/killall.sh || true"
 done
 
 ####################
