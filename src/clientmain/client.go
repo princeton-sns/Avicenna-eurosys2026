@@ -30,7 +30,7 @@ import (
 )
 
 // const REQUEST_TIMEOUT = 1500 * time.Millisecond
-// const REQUEST_TIMEOUT = 100 * time.Millisecond         // just make this a cli please.
+// const REQUEST_TIMEOUT = 100 * time.Millisecond
 const ATLEAST_MESSAGE_INTERVAL = 10 * time.Millisecond // TODO Maybe do something more sophisticated. Is this a timeout?
 const GET_VIEW_TIMEOUT = 100 * time.Millisecond
 const GC_DEBUG_ENABLED = false
@@ -40,8 +40,6 @@ const NPINGS = 50
 const NPINGS_TO_DISCARD = 25
 
 const CLIENT_TIMEOUT_INTERVAL = 2 * time.Second
-
-// const CLIENT_TIMEOUT_INTERVAL = 350 * time.Millisecond
 
 const AVICENNA_PROPOSE_REALLEADER_ONLY = true
 const AVICENNA_PROPOSE_LEADERS_ONLY = true
@@ -207,7 +205,7 @@ func main() {
 		clientId = uint32(*cid)
 	}
 
-	// log.Printf("Starting client %v!\n", clientId)
+	log.Printf("Starting client %v!\n", clientId)
 
 	r := rand.New(rand.NewSource(int64(clientId)))
 	// zipf := rand.NewZipf(r, *s, *v, *numKeys)
@@ -216,7 +214,7 @@ func main() {
 		log.Fatalf("Conflicts percentage must be between 0 and 100.\n")
 	}
 
-	// log.Printf("Connecting to master at %v\n", fmt.Sprintf("%s:%d", *masterAddr, *masterPort))
+	log.Printf("Connecting to master at %v\n", fmt.Sprintf("%s:%d", *masterAddr, *masterPort))
 	master, err := rpc.DialHTTP("tcp", fmt.Sprintf("%s:%d", *masterAddr, *masterPort))
 	if err != nil {
 		log.Fatalf("Error connecting to master\n")
@@ -340,7 +338,6 @@ func main() {
 			leader = reply.Leader1Id
 			leader2 = reply.Leader2Id
 			log.Printf("The leader 1 is replica %d. The leader 2 is replica %d\n", leader, leader2)
-			// log.Printf("The leader 1 is replica %d (%s). The leader 2 is replica %d (%s)\n", leader, rlReply.ReplicaList[leader], leader2, rlReply.ReplicaList[leader2])
 
 			// Init views. Assume initial view id is 0
 			views = make([]*View, 2)
@@ -404,9 +401,7 @@ func main() {
 		for i := 0; i < N; i++ {
 			go waitRepliesPilot(readers, i, pilot0ReplyChan, viewChangeChan, *reqsNb*2)
 		}
-	} else { // mr9rsm
-		// with another pre-specified leader, we need to check other reply channel, and another reader
-		// surgMock = make(chan bool, 100000)
+	} else { // avicenna
 		execTimeChan = make(chan genericsmrproto.MockExecTime_, *reqsNb)
 		pilot0ReplyChan = make(chan Response, N*(*reqsNb))
 		viewChangeChan = make(chan *View, 100)
@@ -416,21 +411,6 @@ func main() {
 			go waitRepliesReplica(readers, i, pilot0ReplyChan, viewChangeChan, mockCommittedChan, realCommittedChan, execTimeChan, *reqsNb*N) // was *N
 		}
 	}
-	// else if *mr99rsm {
-	// // TODO setup channels for clients to receive replies from every replica
-	// // TODO will require mimicking copilot
-	// // TODO add && !*mr99rsm in check above
-	// replicaReplyChans = make([]chan int32, N)
-	//
-	// }
-
-	// if mr99rsm get latencies to all replicas over 100 pings and take the
-	// lowest one and send them to the replicas
-	// if *doavicenna {
-	// 	// log.Printf("Starting to pingAndSendRttTable...\n")
-	// 	pingAndSendRttTable(writers, pilot0ReplyChan) // blocking
-	// 	// log.Printf("... done pingAndSendRttTable\n")
-	// }
 
 	latencies = make([]int64, 0, *reqsNb)
 	readlatencies = make([]int64, 0, *reqsNb)
@@ -451,17 +431,6 @@ func main() {
 	var lastGVSent0, lastGVSent1 time.Time
 	lastPrint := time.Now()
 	i := 0
-
-	// catch a signal so that we know where the client was when stopping if killed prematurely
-	// signalChan := make(chan os.Signal, 1)
-	// signal.Notify(signalChan, syscall.SIGTERM, syscall.SIGTERM)
-	// // log.Printf("About to call the thread for the signal waiting signal signal signal")
-	// go func() {
-	// 	// log.Printf("Starting to wait for signal\n")
-	// 	sig := <-signalChan
-	// 	// log.Printf("Got signal %v Client was on request %v\n", sig, i)
-	// 	panic(fmt.Sprintf("Got signal %v Client was on request %v\n", sig, i))
-	// }()
 
 	source := rand.NewSource(time.Now().UnixNano())
 	rng := rand.New(source)
@@ -484,34 +453,21 @@ func main() {
 	ghostCommitMap := make(map[int32]*commitLatencyTrack)
 	realCommitMap := make(map[int32]*commitLatencyTrack)
 
-	// mockCommitSucceededMap := make(map[int32]*sentTimeReceived)
-	// realCommitSucceededMap := make(map[int32]*sentTimeReceived)
-
 	if !*twoLeaders && !*doavicenna && !isRandomLeader && *noLeader == false {
 		leader = 0
 		// log.Printf("I believe this is fvc starting leader at %v\n", leader)
 	}
 	doMock := 0
-	// var doMockForce bool
-	// doMockForce = false
 	overtime := false
 	// doneTimer := time.NewTimer(time.Duration(*maxRuntime*time.Now().Second()))
 	log.Println("================ Entering Main Loop ================")
 	for i = 0; i < *reqsNb; i++ {
-		// if *noLeader {
-		// 	log.Printf("Key for %d-th reqeust is %d.\n", i, karray[i])
-		// }
-		// r := time.Duration(0)
-		// if *random_interval > 0 {
-		// 	r = time.Duration(rng.Int63n(*random_interval)) * time.Millisecond
-		// }
-		// time.Sleep(r)
-
 		id := int32(i)
-		// MR99RSM DOES NOT USE ARGS
+
+		// Avicenna does not use this
 		args := genericsmrproto.Propose{id, state.Command{ClientId: clientId, OpId: id, Op: state.PUT, K: 0, V: 0}, time.Now().UnixNano()}
 
-		// FOR MR99RSM ONLY
+		// For Avicenna only
 		argsExecTime := genericsmrproto.ProposeWithExecTime{id, state.Command{ClientId: clientId, OpId: id, Op: state.PUT, K: 0, V: 0},
 			genericsmrproto.EndToEndLatency_{Latency: -1, CommandId: -1}}
 
@@ -523,7 +479,6 @@ func main() {
 			}
 			argsExecTime.Command.K = state.Key(karray[i])
 			argsExecTime.Command.V = state.Value(i)
-			// log.Printf("About to propose commandId %d\n", id)
 			if *doavicenna {
 				// argsExecTime.Timestamp = 0
 				if doMock > 0 { // only piggyback a timestamp if I mocked the last request.
@@ -548,41 +503,20 @@ func main() {
 		before := time.Now()
 		timestamps = append(timestamps, before)
 
-		// decide whether or not to Mock this request.
-		doMock = 0 //(rng.Int31() % 2) // random 0 or 1
-		// if clientId == 0 && id == 100 {
-		// 	doMock = 1
-		// }
-
-		// option 1, client decides whether to do mock
-		// if doMockForce {
-		// 	doMock = 1
-		// 	log.Printf("Command %d is set to ghost process, instructed by replicas.\n", id)
-		// } else if rng.Float64() < float64(*percentMocked)/100 {
-		// 	doMock = 1
-		// 	log.Printf("Command %d is set to ghost process.\n", id)
-		// } else {
-		// 	doMock = 0
-		// }
-
-		// option 2, replicas have the final word whether to do mock
+		// decide whether or not to shadow this request.
+		doMock = 0
 		if *doavicenna {
 			if rng.Float64() < float64(*percentMocked)/100 {
 				doMock = 1
 				ghostCommitMap[id] = &commitLatencyTrack{SentTime: before, Received: false, DoGhost: true, Inst: -1, Cmds: nil, CommitLatency: -1}
 				realCommitMap[id] = &commitLatencyTrack{SentTime: before, Received: false, DoGhost: true, Inst: -1, Cmds: nil, CommitLatency: -1}
-				// log.Printf("Command %d is ghost processed. Creating real and ghost maps, sending time %v\n", id, before)
+				// log.Printf("Command %d is shadow processed. Creating real and ghost maps, sending time %v\n", id, before)
 			} else {
 				doMock = 0
 			}
 		}
 
-		// log.Printf("Client %d sending proposal %d, mock: %d\n", clientId, id, doMock) // TODO
-		// doMock := (rng.Int31() % 2) // random 0 or 1
-
 		argsExecTime.CommandId = int32(doMock)
-		// mockCommitSucceededMap[id] = &sentTimeReceived{before, false, doMock > 0}
-		// realCommitSucceededMap[id] = &sentTimeReceived{before, false, doMock > 0}
 
 		repliedCmdId := int32(-1)
 		fromPilot := -1
@@ -623,7 +557,6 @@ func main() {
 					leader = int(views[0].ReplicaId)
 					pilotErr = nil
 					if leader >= 0 {
-						args.Command.Op = state.PUT
 						writers[leader].WriteByte(genericsmrproto.PROPOSE)
 						args.Marshal(writers[leader])
 						pilotErr = writers[leader].Flush()
@@ -771,14 +704,14 @@ func main() {
 					servers[nodeid].SetDeadline(time.Now().Add(90 * time.Second)) // caution
 					writers[nodeid].WriteByte(genericsmrproto.PROPOSE_WITH_EXEC_TIME)
 					argsExecTime.Marshal(writers[nodeid])
-					writers[nodeid].Flush() // caution, this is blocking
+					writers[nodeid].Flush()
 				}(nodeid, argsExecTime)
 				// log.Printf("Sending proposal to node %v, argsExecTime %v", nodeid, argsExecTime)
 				// TODO This pattern is everywhere make function.
 				// servers[nodeid].SetDeadline(time.Now().Add(90 * time.Second)) // caution
 				// writers[nodeid].WriteByte(genericsmrproto.PROPOSE_WITH_EXEC_TIME)
 				// argsExecTime.Marshal(writers[nodeid])
-				// writers[nodeid].Flush() // caution, this is blocking
+				// writers[nodeid].Flush()
 			}
 			to = time.NewTimer(*request_timeout) //REQUEST_TIMEOUT) // start a timer so that we at least check if it's overtime
 			dlog.Printf("Start timer to for 350s in line 660.\n")
@@ -867,7 +800,6 @@ func main() {
 							// if sendTimeReceived, exist := ghostCommitMap[ghostCommitId]; exist && !sendTimeReceived.Received {
 							// log.Printf("First time receive ghostCommitted for command %d, receive time %v, sent time %v, latency %v\n", ghostCommitId, mockCommittedMessageTime.rcvingTime, ghostCommitMap[ghostCommitId].SentTime, mockCommittedMessageTime.rcvingTime.Sub(ghostCommitMap[ghostCommitId].SentTime))
 							// if mockReply.OpId == id && !mockSucceeded {
-							// mockCommitSucceededMap[ghostCommitId].received = true
 							ghostCommitMap[ghostCommitId].Received = true
 							ghostCommitMap[ghostCommitId].Inst = mockCommitted.Instance
 							ghostCommitMap[ghostCommitId].Cmds = mockCommitted.Commands
@@ -939,7 +871,6 @@ func main() {
 						if sendTimeReceived, exist := realCommitMap[realCommitId]; exist && !sendTimeReceived.Received {
 							// log.Printf("First time receive realCommitted for command %d, receive time %v, sent time %v, latency %v\n",
 							// realCommitId, realCommittedMessageTime.rcvingTime, realCommitMap[realCommitId].SentTime, realCommittedMessageTime.rcvingTime.Sub(realCommitMap[realCommitId].SentTime))
-							// realCommitSucceededMap[realCommitId].received = true
 							realCommitMap[realCommitId].Received = true
 							realCommitMap[realCommitId].Inst = realCommitted.Instance
 							realCommitMap[realCommitId].Cmds = realCommitted.Commands
@@ -1166,7 +1097,6 @@ func main() {
 			}
 			if leader >= 0 {
 				writers[leader].WriteByte(genericsmrproto.PROPOSE)
-				args.Command.Op = state.PUT
 				args.Marshal(writers[leader])
 				writers[leader].Flush()
 				// log.Printf("Command %d is write? %v", i, (args.Command.Op == state.PUT))

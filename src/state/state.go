@@ -96,18 +96,6 @@ func IsRead(command *Command) bool {
 }
 
 func (c *Command) Execute(st *State) Value {
-	//fmt.Printf("Executing (%d, %d)\n", c.K, c.V)
-
-	//var key, value [8]byte
-	// size := 1 * 1024 // 1kb
-	// size := 10 * 1024 // 10kb
-	// size := 100 * 1024 // 100KB
-	// size := 1 * 1024 * 1024 // 1mb
-	// size := 10 * 1024 * 1024 // 10mb
-	// Buf := make([]byte, size)
-	// Buf[0] = 0
-	//    st.mutex.Lock()
-	//    defer st.mutex.Unlock()
 
 	switch c.Op {
 	case PUT:
@@ -117,24 +105,8 @@ func (c *Command) Execute(st *State) Value {
 		   st.DB.Set(key[:], value[:], nil)
 		*/
 
-		// st.Store[c.K] = c.V
-		// Buf := make([]byte, size)
-		Buf[0] = 0
-		// log.Printf("Executing the write.\n")
-		// for i := 0; i < len(Buf); i++ {
-		// 	Buf[i] = byte(i)
-		// }
-		// buf[0] = 0
-		// two := []byte{0xAB, 0xCD}
-		// dlog.Println(two)
+		st.Store[c.K] = c.V
 
-		// sixteen := []byte{
-		// 	0x00, 0x01, 0x02, 0x03,
-		// 	0x04, 0x05, 0x06, 0x07,
-		// 	0x08, 0x09, 0x0A, 0x0B,
-		// 	0x0C, 0x0D, 0x0E, 0x0F,
-		// }
-		// dlog.Println(sixteen)
 		return c.V
 
 	case GET:

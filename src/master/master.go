@@ -24,8 +24,7 @@ var serversFile *string = flag.String("f", "", "fast-view-change. Defaults to fa
 
 const PING_INTERVAL = 10 * time.Millisecond
 
-const VIEW_CHANGE_TIMEOUT = 300 * time.Millisecond // fvc
-// const VIEW_CHANGE_TIMEOUT = 3 * time.Second // multi-paxos // cli this
+const VIEW_CHANGE_TIMEOUT = 300 * time.Millisecond
 
 type Master struct {
 	N        int

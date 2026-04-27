@@ -34,7 +34,6 @@ var doEpaxos *bool = flag.Bool("e", false, "Use EPaxos as the replication protoc
 var doCopilot *bool = flag.Bool("copilot", false, "Use Copilot as the replication protocol. Defaults to false.")
 var doLatentCopilot *bool = flag.Bool("latentcopilot", false, "Use Latent Copilot as the replication protocol. Defaults to false.")
 
-// var doMR99rsm = flag.Bool("domr99rsm", false, "Use MR99RSM as the replication protocol. Defaults to false.")
 var doAvicenna = flag.Bool("doavicenna", false, "Use Avicenna as the replication protocol. Defaults to false.")
 var doFvc = flag.Bool("dofvc", false, "Use FVC as teh replica protocol. Defaults to false.")
 var procs *int = flag.Int("p", 2, "GOMAXPROCS. Defaults to 2")

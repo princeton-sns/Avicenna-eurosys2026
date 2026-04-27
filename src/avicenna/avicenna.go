@@ -13,7 +13,6 @@ import (
 	"io"
 	"log"
 	"math"
-	"os"
 	"runtime"
 	"slowdowntimers"
 	"sort"
@@ -48,7 +47,7 @@ const BATCH_INTERVAL = 250 * time.Microsecond // LAN
 // const BATCH_INTERVAL = 100 * time.Microsecond // LAN
 
 const DRAIN_INTERVAL = 100 * time.Microsecond
-const ARBITRARY_STANDBY_NO_ROLE = true // set this to Ture in LAN to preven leader or ghost leader from being standbys.
+const ARBITRARY_STANDBY_NO_ROLE = true // set this to Ture in LAN to prevent leader or ghost leader from being standbys.
 
 /*********************************/
 
@@ -1461,14 +1460,6 @@ type Replica struct {
 	replicaMu                   []sync.Mutex
 	globalMaxCommittedReal      int32
 	globalMaxCommittedGhost     int32
-	// what do we need to doo for mocking?
-	// have a map of client requests to the statuses of each replica mocking
-	// compare the mocked request to the actual requests above and start timers
-	// the timers put values in a channel which is checked to trigger rotation
-	// the metadata for each client request should have the status for each replica
-	// each replica should also mock commit messages (the leader can be slow
-	// just before committing)
-	// cmdMetadata map[state.CommandId]bool // is bool fine?
 }
 
 type CommandMetadata struct {
@@ -1485,15 +1476,6 @@ type CommandMetadata struct {
 
 	mockCommitTime time.Duration
 	commitTime     time.Duration
-
-	// acceptTimerStart    time.Time
-	// acceptTimerDuration time.Duration
-	// acceptTimerStop     time.Time
-	// acceptTimerFired    time.Time
-	// commitTimerStart    time.Time
-	// commitTimerDuration time.Duration
-	// commitTimerStop     time.Time
-	// commitTimerFired    time.Time
 }
 
 type InstanceStatus int
@@ -1818,16 +1800,6 @@ func (r *Replica) curConfiguration() *Configuration {
 func (r *Replica) expectedArrivalTime(cid int32, rid int32) time.Duration {
 
 	return 0
-}
-
-func (r *Replica) setTimerIfEarlier(duration time.Duration) {
-	if r.timer == nil {
-		r.timer = time.NewTimer(duration)
-		return
-	}
-	if r.endTime.IsZero() || time.Now().Add(duration).Before(r.endTime) {
-		r.timer.Reset(duration)
-	}
 }
 
 func nbWriteToChan(c *chan int32, v int32) bool {
@@ -2532,7 +2504,6 @@ func (r *Replica) run() {
 
 	if r.Exec {
 		go r.executeCommands()
-		// go r.executeCommandsMock()
 	}
 
 	clockChan = make(chan bool, 1)
@@ -2544,10 +2515,6 @@ func (r *Replica) run() {
 	totalMsgParseLat = 0
 	averMsgParseLat = 0
 	totalMsgCount = 0
-
-	// if r.Id == 0 {
-	// 	r.IsLeader = true
-	// }
 
 	// go r.drainClock()
 
@@ -2578,12 +2545,6 @@ func (r *Replica) run() {
 		log.Printf("No.\n")
 	}
 
-	// surgMockTimerTrigger := make(chan struct{})
-	// surgMockTimerExpired := make(chan struct{})
-	// go r.surgMockTimer(surgMockTimerTrigger, surgMockTimerExpired, WINDOW_SIZE)
-	// lastSent := time.Time{}
-	// commitDiff := r.getMinQuorumLatencyForReplica(r.configurationForPhase(r.phase+1).coordinator, r.curCoordinator()) - r.getMinQuorumLatencyForReplica(r.curCoordinator(), -1)
-	// log.Printf("commitDiff between cur %v and next %v is %v\n", r.curCoordinator(), r.configurationForPhase(r.phase+1).coordinator, commitDiff)
 	for !r.Shutdown {
 		if !r.warmupDone {
 			select {
@@ -2596,39 +2557,29 @@ func (r *Replica) run() {
 			}
 		}
 
-		// inject slowdowns if I should
-		// if r.IsSlowdownReplica && INJECT_TRANSIENT_SLOWDOWN {
-		// 	slowdownTimers.CheckAndDoSlowdown()
-		// }
-
 		empty := false
 		for !empty {
 			select {
 			case p := <-r.slowdownChan:
-				// if p == r.phase && !r.sentForPhase && r.phase == 0 {
 				if p == r.phase && !r.sentForPhase {
 					log.Printf("Slowdown suspects in phase %v rotating\n", p)
 					r.bcastRotate()
 				} else {
 					dlog.Printf("ignoring suspicion phase %v\n", p)
 				}
-				// r.setTimerIfEarlier(expectedDelay)
 
 			case rotateS := <-r.rotateChan:
 				rotate := rotateS.Obj.(*avicennaproto.Rotate)
 				log.Printf("Handling RotateChan message for phase %v from %v, received at %v\n", rotate.Phase, rotate.ReplicaId, rotateS.RecvTime)
-				// if r.phase == 0 {
-				// 	r.handleRotate(rotate)
-				// }
 				r.handleRotate(rotate)
 
-			// case <-r.timer.C:
-			// 	if !r.sentForPhase {
-			// 		log.Printf("Progress timer triggers rotation in phase %v\n", r.phase)
-			// 		r.bcastRotate()
-			// 	} else {
-			// 		dlog.Printf("ignoring suspicion phase %v\n", r.phase)
-			// 	}
+			case <-r.timer.C:
+				if !r.sentForPhase {
+					log.Printf("Progress timer triggers rotation in phase %v\n", r.phase)
+					r.bcastRotate()
+				} else {
+					dlog.Printf("ignoring suspicion phase %v\n", r.phase)
+				}
 			default:
 				if !r.sentForPhase {
 					empty = true
@@ -3251,11 +3202,6 @@ func (r *Replica) updateConfigurationsBasedOnRttTable() {
 	// r.configurations[len(r.configurations)-1] = initialConf
 	// r.configurations = r.configurations[:SLOWDOWNS_TO_TOLERATE+1]
 	// log.Printf("Updated each configuration: %v\n", r.configurations)
-	if SANITY_CHECK {
-		configString := fmt.Sprintf("then %v \n", r.configurations)
-		f := fmt.Sprintf("configs%v", r.Id)
-		os.WriteFile(f, []byte(configString), 0644)
-	}
 }
 
 func (r *Replica) updateConfigurationsBasedOnRttTableOLD() {
@@ -3359,11 +3305,6 @@ func (r *Replica) updateConfigurationsBasedOnRttTableOLD() {
 	// r.configurations[len(r.configurations)-1] = initialConf
 	// r.configurations = r.configurations[:SLOWDOWNS_TO_TOLERATE+1]
 	dlog.Printf("Updated each configuration: %v\n", r.configurations)
-	if SANITY_CHECK {
-		configString := fmt.Sprintf("%v then %v \n", initialConf, r.configurations)
-		f := fmt.Sprintf("configs%v", r.Id)
-		os.WriteFile(f, []byte(configString), 0644)
-	}
 }
 
 func (r *Replica) updateRttTable(table *avicennaproto.RttTable) {
@@ -7105,127 +7046,11 @@ func printCommands(cmds *[]state.Command) {
 	}
 }
 
-func (r *Replica) executeCommandsMock() {
-	// slowdownTimers := &slowdowntimers.SlowdownTimers{}
-
-	i := int32(0)
-	// if r.IsSlowdownReplica {
-	// 	if INJECT_TRANSIENT_SLOWDOWN {
-	// 		slowdownTimers.InitializeTimers(r.Id, r.TimeToSlowdown, r.SlowdownDuration)
-	// 	} else if INJECT_LONGLIVED_SLOWDOWN {
-	// 		slowdownTimers.InitializeTimers(r.Id, r.TimeToSlowdown, r.SlowdownDuration)
-	// 	}
-	// }
-	for !r.Shutdown {
-		// if receivedAPropose {//&& !slowdownTimers.Initialized {
-		// 	slowdownTimers.InitializeTimers(r.Id, r.TimesToSlowdown)
-		// }
-		executed := false
-
-		if r.IsSlowdownReplica {
-			// if INJECT_TRANSIENT_SLOWDOWN {
-			// 	slowdownTimers.CheckAndDoSlowdown()
-			// }
-			// else if INJECT_LONGLIVED_SLOWDOWN {
-			// 	slowdownTimers.CheckAndDoLongLivedSlowdown()
-			// }
-		}
-
-		for i <= r.mockCommittedUpTo {
-			if r.instanceSpaceMock[i].cmds != nil {
-				inst := r.instanceSpaceMock[i]
-
-				dlog.Printf("About to execute instance %v with %v cmds\n",
-					i, len(inst.cmds))
-
-				if SANITY_CHECK {
-					if len(inst.cmds) == 0 {
-						// log.Printf("0 Commands in execution instance %v\n", i)
-						// panic("0 cmds in execution")
-					}
-				}
-				// each instance has a batch of cmds to exec
-				for j := 0; j < len(inst.cmds); j++ {
-					cmd := inst.cmds[j]
-					cmdExecMapKey := getKeyForExecMap(cmd.Cmd.ClientId, cmd.Cmd.OpId)
-					if r.execMapMock[cmdExecMapKey] {
-						dlog.Printf("This replica is executing the same request twice! %v %v\n", cmd.Cmd.ClientId, cmd.Cmd.OpId)
-						// let's not count dups for Mock executions
-						// dups++
-						continue
-					}
-					r.execMapMock[cmdExecMapKey] = true
-					// Mock execution doesn't execute
-					// val := cmd.Execute(r.State)
-
-					// WHEN REPLYING TO CLIENTS
-					// val := state.Value(0)
-
-					// TODO for correctness tests atm
-					// r.recordCommands(inst.cmds)
-
-					// we don't MockReply anymore
-					// if true || r.isCurMockCoordinator() || r.isCoordinator(r.Id) {
-					// 	if writer, ok := r.clientWriters[cmd.ClientId]; ok {
-					// 		propreply := &genericsmrproto.ProposeReplyTS{
-					// 			OK:        avicennaproto.CLIENTMOCKREPLY,
-					// 			CommandId: cmd.OpId,
-					// 			Value:     val,
-					// 			Timestamp: int64(i)}
-
-					// 		dlog.Printf("MockReplying to a client for %v %v in instance %v\n", cmd.ClientId, cmd.OpId, i)
-
-					// 		if err := r.ReplyProposeTS(propreply, writer); err != nil {
-					// 			pstring := fmt.Sprintf("Error replying to client: %v", err)
-					// 			panic(pstring)
-					// 		}
-					// 	} else {
-					// 		dlog.Printf("Replica has no writer to client %v\n", cmd.ClientId)
-					// 		panic("No client writer")
-					// 	}
-					// }
-				}
-				i++
-				dlog.Printf("Execution reached and is now waiting for %v\n", i)
-				executed = true
-			} else {
-				break
-			}
-		}
-
-		if !executed {
-			time.Sleep(1000)
-		}
-	}
-
-}
-
 func (r *Replica) executeCommands() {
-	// slowdownTimers := &slowdowntimers.SlowdownTimers{}
-
 	i := int32(0)
-	// if r.IsSlowdownReplica {
-	// 	if INJECT_TRANSIENT_SLOWDOWN {
-	// 		// slowdownTimers.InitializeTimers(r.Id, r.TimesToSlowdown)
-	// 		slowdownTimers.InitializeTimers(r.Id, r.TimeToSlowdown, r.SlowdownDuration)
-	// 	} else if INJECT_LONGLIVED_SLOWDOWN {
-	// 		slowdownTimers.InitializeTimers(r.Id, r.TimeToSlowdown, r.SlowdownDuration)
-	// 	}
-	// }
+
 	for !r.Shutdown {
-		// if receivedAPropose && !slowdownTimers.initialized {
-		// 	slowdownTimers.initializeTimers()
-		// }
 		executed := false
-		// if r.IsSlowdownReplica {
-		// 	// if INJECT_TRANSIENT_SLOWDOWN {
-		// 	// 	slowdownTimers.CheckAndDoSlowdown()
-		// 	// }
-		// 	//  else
-		// 	//  if INJECT_LONGLIVED_SLOWDOWN {
-		// 	// 	slowdownTimers.CheckAndDoLongLivedSlowdown()
-		// 	// }
-		// }
 
 		for i <= r.committedUpTo {
 			if r.instanceSpace[i].cmds != nil {
